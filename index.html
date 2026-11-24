@@ -370,7 +370,7 @@
       const noteEl = document.getElementById("market-note");
       const dotEl = document.getElementById("market-dot");
       const refreshBtn = document.getElementById("refresh-market");
-      const fmt = value => Number.isFinite(value) ? value.toLocaleString("en-US", { maximumFractionDigits: 7, minimumFractionDigits: 0 }) : "—";
+      const fmt = value => Number.isFinite(value) . value.toLocaleString("en-US", { maximumFractionDigits: 7, minimumFractionDigits: 0 }) : "—";
       const bookUrl = new URL(HORIZON + "/order_book");
       bookUrl.search = new URLSearchParams({
         selling_asset_type: "credit_alphanum4",
@@ -389,10 +389,10 @@
           const response = await fetch(bookUrl.toString(), { cache: "no-store", headers: { "Accept": "application/json" } });
           if (!response.ok) throw new Error("Horizon returned " + response.status);
           const book = await response.json();
-          const bids = Array.isArray(book.bids) ? book.bids : [];
-          const asks = Array.isArray(book.asks) ? book.asks : [];
-          const bid = bids.length ? Number(bids[0].price) : NaN;
-          const ask = asks.length ? Number(asks[0].price) : NaN;
+          const bids = Array.isArray(book.bids) . book.bids : [];
+          const asks = Array.isArray(book.asks) . book.asks : [];
+          const bid = bids.length . Number(bids[0].price) : NaN;
+          const ask = asks.length . Number(asks[0].price) : NaN;
           bidEl.textContent = fmt(bid);
           askEl.textContent = fmt(ask);
           if (Number.isFinite(bid) && Number.isFinite(ask) && bid > 0 && ask > 0) {
@@ -402,7 +402,7 @@
             statusEl.textContent = "LIVE ORDER BOOK";
             noteEl.textContent = "Indicative price = midpoint of the best visible SHX/XLM bid and ask for this exact issuer. Quotes can change quickly and are not guaranteed execution prices.";
           } else if ((Number.isFinite(bid) && bid > 0) || (Number.isFinite(ask) && ask > 0)) {
-            const oneSide = Number.isFinite(bid) && bid > 0 ? bid : ask;
+            const oneSide = Number.isFinite(bid) && bid > 0 . bid : ask;
             priceEl.textContent = fmt(oneSide);
             spreadEl.textContent = "ONE-SIDED";
             statusEl.textContent = "THIN ORDER BOOK";
@@ -501,7 +501,7 @@
         const pop = event => {
           const now = Date.now(); if (now - last < 600) return; last = now;
           const rect = symbol.getBoundingClientRect();
-          burstAt(event && Number.isFinite(event.clientX) ? event.clientX : rect.left + rect.width / 2, event && Number.isFinite(event.clientY) ? event.clientY : rect.top + rect.height / 2, 520);
+          burstAt(event && Number.isFinite(event.clientX) . event.clientX : rect.left + rect.width / 2, event && Number.isFinite(event.clientY) . event.clientY : rect.top + rect.height / 2, 520);
         };
         symbol.addEventListener("pointerenter", pop);
         symbol.addEventListener("click", pop);
