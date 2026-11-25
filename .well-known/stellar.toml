@@ -15,3 +15,13 @@ display_decimals = 7
 desc = "SHX TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
 conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
 image = "https://SHX.pages.dev/assets/SHX.png"
+
+
+[[CURRENCIES]]
+code = "SHX"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "SHX TOKEN"
+display_decimals = 7
+desc = "SHX TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://SHX.pages.dev/assets/SHX.png"
