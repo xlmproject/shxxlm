@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050b20">
+  <meta name="description" content="SHX TOKEN — an issuer-specific Stellar asset profile with live Stellar DEX market data, network information and an interactive cosmic experience.">
+  <meta property="og:title" content="SHX TOKEN — Beyond the Ordinary">
+  <meta property="og:description" content="Explore SHX TOKEN on Stellar. Live order-book quotes are queried for the exact issuer address.">
+  <meta property="og:image" content="https://shxxlm.pages.dev/assets/shx-mark.png">
+  <title>SHX TOKEN — Beyond the Ordinary</title>
+  <link rel="icon" type="image/png" href="/assets/shx-mark.png">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #050b20;
+      --bg-deep: #020617;
+      --panel: rgba(8, 17, 43, .78);
+      --panel-strong: rgba(11, 22, 54, .92);
+      --red: #ff4058;
+      --red-hot: #ff2145;
+      --red-soft: #ff8290;
+      --red-dim: rgba(255, 64, 88, .58);
+      --blue: #17356a;
+      --line: rgba(255, 72, 97, .22);
+      --text: #ff6578;
+      --muted: #c45a6b;
+      --white-red: #ffd6db;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--bg-deep); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 51% 6%, rgba(27, 66, 138, .30), transparent 44%),
+        radial-gradient(ellipse at 88% 47%, rgba(91, 16, 57, .18), transparent 34%),
+        linear-gradient(180deg, #050b20 0%, #03091b 54%, #020617 100%);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      isolation: isolate;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    #fx-layer { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+    .space-glow {
+      position: fixed; z-index: -2; inset: -15%; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 52% 44%, rgba(34, 76, 154, .28), transparent 34%),
+        radial-gradient(ellipse at 76% 28%, rgba(127, 25, 87, .18), transparent 27%),
+        radial-gradient(ellipse at 23% 76%, rgba(13, 52, 110, .2), transparent 30%);
+      filter: blur(22px);
+      transform: translate(calc(var(--move-x, 0px) * .025), calc(var(--move-y, 0px) * .025));
+      transition: transform .22s ease-out;
+    }
+    .nebula {
+      position: fixed; z-index: -2; width: 46rem; height: 46rem; border-radius: 50%;
+      pointer-events: none; filter: blur(72px); opacity: .13;
+      background: conic-gradient(from 30deg, #154f9d, #9a174c, #212d83, #0c7193, #154f9d);
+      animation: nebula-drift 32s ease-in-out infinite alternate;
+      left: 35%; top: 14%;
+      transform: translate(calc(var(--move-x, 0px) * .04), calc(var(--move-y, 0px) * .04));
+    }
+    @keyframes nebula-drift { from { rotate: -12deg; scale: .92; } to { rotate: 18deg; scale: 1.08; } }
+    .currency-field { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .currency-symbol {
+      position: absolute; display: grid; place-items: center; width: 46px; height: 46px;
+      border: 1px solid rgba(255, 77, 100, .22); border-radius: 50%;
+      color: rgba(255, 98, 121, .7); background: rgba(5, 13, 36, .35);
+      box-shadow: 0 0 26px rgba(255, 36, 74, .1), inset 0 0 18px rgba(65, 107, 188, .1);
+      font-family: var(--mono); font-size: 18px; font-weight: 700;
+      pointer-events: auto; cursor: crosshair; user-select: none;
+      animation: currency-float var(--duration, 18s) ease-in-out infinite alternate;
+      transition: color .2s, border-color .2s, scale .2s, background .2s;
+    }
+    .currency-symbol:hover { color: #fff; border-color: rgba(255, 85, 112, .9); background: rgba(255, 42, 77, .16); scale: 1.2; }
+    @keyframes currency-float { from { translate: 0 16px; rotate: -9deg; } to { translate: 15px -22px; rotate: 13deg; } }
+    .currency-symbol:nth-child(1) { left: 8%; top: 28%; --duration: 17s; }
+    .currency-symbol:nth-child(2) { left: 17%; top: 74%; --duration: 21s; animation-delay: -8s; }
+    .currency-symbol:nth-child(3) { right: 10%; top: 20%; --duration: 19s; animation-delay: -5s; }
+    .currency-symbol:nth-child(4) { right: 15%; top: 67%; --duration: 23s; animation-delay: -11s; }
+    .currency-symbol:nth-child(5) { left: 47%; top: 14%; --duration: 24s; animation-delay: -3s; }
+    .currency-symbol:nth-child(6) { left: 74%; top: 82%; --duration: 20s; animation-delay: -7s; }
+    .currency-symbol:nth-child(7) { left: 4%; top: 56%; --duration: 22s; animation-delay: -13s; }
+    .currency-symbol:nth-child(8) { right: 3%; top: 45%; --duration: 18s; animation-delay: -4s; }
+
+    .site-header {
+      width: min(1220px, calc(100% - 48px)); margin: 0 auto; padding: 24px 0 18px;
+      display: flex; align-items: center; justify-content: space-between; gap: 22px;
+      position: relative; z-index: 5; border-bottom: 1px solid rgba(255, 65, 89, .14);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .brand img { width: 31px; height: 31px; filter: drop-shadow(0 0 12px rgba(255, 45, 79, .35)); }
+    .brand-name { display: block; color: var(--red); font-family: var(--mono); font-size: 12px; letter-spacing: .16em; font-weight: 900; }
+    .brand-sub { display: block; margin-top: 3px; color: #aa5264; font-family: var(--mono); font-size: 8px; letter-spacing: .19em; }
+    .nav { display: flex; align-items: center; gap: clamp(16px, 3vw, 38px); margin-left: auto; margin-right: 8px; }
+    .nav a { font-family: var(--mono); color: #da6073; font-size: 10px; letter-spacing: .12em; transition: color .2s, text-shadow .2s; }
+    .nav a:hover { color: #fff; text-shadow: 0 0 15px var(--red); }
+    .trade-button {
+      display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+      min-width: 100px; padding: 11px 17px; border: 1px solid rgba(255, 64, 88, .8);
+      border-radius: 3px; background: linear-gradient(110deg, #a90e31, #ff294e 60%, #c20f36);
+      color: #fff; font-family: var(--mono); font-size: 10px; font-weight: 900; letter-spacing: .15em;
+      box-shadow: 0 0 24px rgba(255, 32, 68, .19), inset 0 1px rgba(255,255,255,.18);
+      text-transform: uppercase; transition: transform .2s, box-shadow .2s, filter .2s;
+    }
+    .trade-button:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(255, 32, 68, .4); filter: brightness(1.12); }
+    .trade-button svg { width: 12px; height: 12px; }
+    main, footer { position: relative; z-index: 1; }
+    .hero { width: min(1220px, calc(100% - 48px)); margin: 0 auto; min-height: 650px; display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 28px; padding: 78px 0 66px; }
+    .hero-copy { position: relative; z-index: 2; max-width: 600px; }
+    .eyebrow { display: flex; align-items: center; gap: 11px; color: #d94b63; font: 10px var(--mono); letter-spacing: .2em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; display: block; width: 28px; height: 1px; background: var(--red); box-shadow: 0 0 12px var(--red); }
+    h1 { margin: 23px 0 19px; color: #ff425f; font-size: clamp(48px, 7.6vw, 98px); line-height: .91; letter-spacing: -.075em; font-weight: 850; text-transform: uppercase; text-shadow: 0 0 35px rgba(255, 27, 66, .15); }
+    h1 span { color: #ff9aa7; font-weight: 250; letter-spacing: -.09em; }
+    .hero-description { max-width: 500px; color: #dd6678; font-size: 14px; line-height: 1.85; font-weight: 420; }
+    .hero-description strong { color: #ff9ca7; font-weight: 650; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; margin-top: 31px; }
+    .text-link { display: inline-flex; align-items: center; gap: 8px; color: #e97887; font: 10px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+    .text-link:hover { color: #fff; }
+    .network-pill { display: inline-flex; align-items: center; gap: 8px; margin-top: 27px; padding: 9px 12px; border: 1px solid rgba(255, 65, 91, .17); background: rgba(7, 18, 44, .48); color: #b95c6c; font: 9px var(--mono); letter-spacing: .11em; }
+    .network-pill i, .live-dot { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #ff4c68; box-shadow: 0 0 12px #ff3858; }
+    .visual-wrap { min-height: 470px; position: relative; display: grid; place-items: center; }
+    .orbit-scene { position: relative; width: min(440px, 100%); aspect-ratio: 1; display: grid; place-items: center; }
+    .orbit-ring { position: absolute; border: 1px solid rgba(255, 75, 100, .19); border-radius: 50%; transform: rotate(-22deg) scaleY(.56); box-shadow: 0 0 22px rgba(255, 35, 70, .045); }
+    .orbit-ring.one { width: 95%; height: 95%; animation: orbit-spin 36s linear infinite; }
+    .orbit-ring.two { width: 77%; height: 77%; transform: rotate(58deg) scaleY(.64); border-color: rgba(50, 120, 220, .22); animation: orbit-spin 28s linear infinite reverse; }
+    .orbit-ring.three { width: 58%; height: 58%; transform: rotate(-68deg) scaleY(.7); border-style: dashed; border-color: rgba(255, 103, 123, .22); animation: orbit-spin 44s linear infinite; }
+    @keyframes orbit-spin { to { rotate: 360deg; } }
+    .orbit-core { position: relative; z-index: 2; width: 47%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 34% 28%, rgba(255, 124, 139, .42), transparent 27%), radial-gradient(circle at 50% 50%, #182b5d 0%, #07112e 56%, #03091b 75%); border: 1px solid rgba(255, 99, 122, .45); box-shadow: 0 0 38px rgba(255, 39, 76, .23), 0 0 90px rgba(34, 91, 173, .23), inset 0 0 44px rgba(255, 43, 76, .12); animation: core-breathe 5s ease-in-out infinite; }
+    .orbit-core img { width: 61%; height: 61%; filter: drop-shadow(0 0 18px rgba(255, 56, 84, .35)); }
+    @keyframes core-breathe { 50% { scale: 1.045; box-shadow: 0 0 54px rgba(255, 39, 76, .32), 0 0 110px rgba(34, 91, 173, .27), inset 0 0 48px rgba(255, 43, 76, .16); } }
+    .orbit-label { position: absolute; left: 5%; bottom: 14%; color: #a34d60; font: 9px var(--mono); line-height: 1.8; letter-spacing: .12em; }
+    .orbit-label strong { display: block; color: #ff6178; font-size: 12px; }
+    .reactor-button {
+      position: absolute; z-index: 4; right: -1%; top: 42%; width: 92px; height: 104px;
+      display: grid; place-items: center; padding: 0; border: 0; background: transparent; cursor: crosshair;
+      color: #ff6379; filter: drop-shadow(0 0 13px rgba(255, 50, 84, .35));
+      transition: transform .25s, filter .25s;
+    }
+    .reactor-button:hover, .reactor-button:focus-visible { transform: scale(1.15) rotate(7deg); filter: drop-shadow(0 0 24px rgba(255, 50, 84, .78)); outline: none; }
+    .reactor-button svg { width: 80px; height: 88px; overflow: visible; }
+    .reactor-caption { position: absolute; right: 0; top: calc(100% - 7px); width: 115px; text-align: center; color: #b34d63; font: 8px var(--mono); letter-spacing: .16em; line-height: 1.6; }
+    .signal-card { position: absolute; top: 11%; right: 5%; padding: 10px 13px; border: 1px solid rgba(255, 75, 100, .2); background: rgba(5, 13, 35, .7); backdrop-filter: blur(8px); color: #e85b72; font: 8px var(--mono); letter-spacing: .1em; }
+    .signal-card b { display: block; margin-top: 5px; font-size: 12px; color: #ff9aa7; font-weight: 700; }
+    .section { width: min(1220px, calc(100% - 48px)); margin: 0 auto; padding: 73px 0; border-top: 1px solid rgba(255, 65, 89, .15); }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+    .section-kicker { color: #b64d63; font: 9px var(--mono); letter-spacing: .19em; text-transform: uppercase; }
+    h2 { margin: 9px 0 0; color: #ff536c; font-size: clamp(24px, 3.4vw, 40px); line-height: 1; letter-spacing: -.055em; font-weight: 700; }
+    .section-intro { max-width: 420px; margin: 0; color: #c66375; font-size: 12px; line-height: 1.8; }
+    .market-panel { display: grid; grid-template-columns: 1.2fr .8fr; gap: 14px; }
+    .market-main, .metric-card, .info-card, .token-strip {
+      border: 1px solid var(--line); background: linear-gradient(145deg, rgba(11, 24, 58, .8), rgba(4, 12, 32, .84));
+      box-shadow: 0 18px 60px rgba(0, 0, 0, .16), inset 0 1px rgba(255,255,255,.02);
+    }
+    .market-main { padding: 25px 28px; min-height: 225px; position: relative; overflow: hidden; }
+    .market-main::after { content: ""; position: absolute; right: -65px; bottom: -135px; width: 300px; height: 300px; border-radius: 50%; border: 1px solid rgba(255, 65, 89, .12); box-shadow: 0 0 0 26px rgba(255,65,89,.025), 0 0 0 56px rgba(49,105,194,.025); }
+    .market-top { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .market-label { color: #bf5a6c; font: 9px var(--mono); letter-spacing: .16em; }
+    .status { display: inline-flex; gap: 7px; align-items: center; color: #ba7380; font: 8px var(--mono); letter-spacing: .08em; }
+    .status .live-dot { background: #ff4966; }
+    .price-line { display: flex; gap: 12px; align-items: baseline; margin-top: 26px; position: relative; z-index: 1; }
+    .price-value { color: #ff536b; font-family: var(--mono); font-size: clamp(27px, 5vw, 48px); letter-spacing: -.07em; font-weight: 700; }
+    .price-unit { color: #da7685; font: 10px var(--mono); letter-spacing: .12em; }
+    .price-foot { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; margin-top: 15px; color: #a95768; font: 9px var(--mono); }
+    .refresh-button { position: relative; z-index: 2; margin-top: 24px; border: 1px solid rgba(255, 64, 88, .32); background: rgba(255, 42, 71, .07); color: #ff8997; padding: 9px 12px; cursor: pointer; font: 9px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    .refresh-button:hover { border-color: var(--red); color: #fff; }
+    .market-side { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .metric-card { min-height: 105px; padding: 20px; }
+    .metric-label { color: #a95366; font: 8px var(--mono); letter-spacing: .15em; text-transform: uppercase; }
+    .metric-value { margin-top: 16px; color: #ff7e8e; font: 700 17px var(--mono); letter-spacing: -.04em; overflow-wrap: anywhere; }
+    .market-note { margin: 16px 0 0; color: #a65364; font: 9px/1.7 var(--mono); }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .info-card { padding: 25px 26px; min-height: 235px; }
+    .info-card h3 { margin: 0 0 13px; color: #ff7385; font-size: 16px; font-weight: 650; }
+    .info-card p { margin: 0; color: #c36677; font-size: 12px; line-height: 1.9; }
+    .info-card .micro { display: block; margin-top: 19px; color: #a94c61; font: 8px/1.8 var(--mono); letter-spacing: .06em; }
+    .issuer-box { margin-top: 16px; padding: 12px 14px; border: 1px solid rgba(255, 71, 97, .16); background: rgba(2, 8, 25, .35); color: #db697c; font: 9px/1.8 var(--mono); overflow-wrap: anywhere; }
+    .issuer-box strong { color: #ff94a1; }
+    .token-strip { padding: 20px 22px; display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
+    .token-chip { border: 1px solid rgba(255, 72, 97, .2); padding: 8px 11px; color: #d76a7a; background: rgba(255, 54, 85, .045); font: 9px var(--mono); letter-spacing: .13em; transition: background .2s, color .2s, transform .2s; }
+    .token-chip:hover { color: #fff; background: rgba(255, 54, 85, .16); transform: translateY(-2px); }
+    .token-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
+    .ecosystem-token {
+      min-width: 0; min-height: 112px; display: flex; align-items: center; gap: 13px; padding: 15px;
+      border: 1px solid rgba(255, 72, 97, .19); border-radius: 8px;
+      background: linear-gradient(145deg, rgba(12, 27, 63, .86), rgba(4, 12, 33, .92));
+      box-shadow: 0 14px 34px rgba(0, 0, 0, .13), inset 0 1px rgba(255,255,255,.025);
+      transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease;
+    }
+    .ecosystem-token:hover, .ecosystem-token:focus-visible { transform: translateY(-4px); border-color: rgba(255, 95, 118, .62); box-shadow: 0 18px 36px rgba(0,0,0,.22), 0 0 24px rgba(255,45,79,.09); outline: none; }
+    .token-logo { width: 58px; height: 58px; flex: 0 0 58px; display: grid; place-items: center; border-radius: 50%; background: rgba(7,15,38,.8); box-shadow: 0 0 18px rgba(64,145,255,.12); transition: transform .25s ease; }
+    .ecosystem-token:hover .token-logo { transform: rotate(-7deg) scale(1.08); }
+    .token-logo img { width: 100%; height: 100%; display: block; }
+    .token-meta { min-width: 0; flex: 1; }
+    .token-code { display: block; color: #ff7185; font: 900 12px var(--mono); letter-spacing: .16em; }
+    .token-desc { display: block; margin-top: 6px; color: #ba6474; font: 8px/1.5 var(--mono); letter-spacing: .055em; }
+    .token-status { display: inline-flex; margin-top: 7px; padding: 4px 6px; border: 1px solid rgba(255,176,80,.32); color: #ffc17a; background: rgba(154,80,22,.11); font: 7px var(--mono); letter-spacing: .06em; }
+    .token-status.alert { border-color: rgba(255,88,110,.42); color: #ff9ba8; background: rgba(160,20,50,.13); }
+    .token-open { align-self: flex-start; margin-left: auto; color: #a64d61; font: 8px var(--mono); white-space: nowrap; }
+    .token-disclaimer { margin: 16px 0 0; color: #a84d61; font: 9px/1.8 var(--mono); max-width: 970px; }
+    @media (max-width: 820px) { .token-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 420px) { .token-grid { gap: 9px; } .ecosystem-token { padding: 11px 9px; gap: 9px; min-height: 96px; } .token-logo { width: 44px; height: 44px; flex-basis: 44px; } .token-code { font-size: 10px; } .token-desc { font-size: 7px; } .token-open { display: none; } }
+    .risk-note { margin-top: 18px; color: #a84d61; font: 9px/1.8 var(--mono); max-width: 950px; }
+    .footer { width: min(1220px, calc(100% - 48px)); margin: 0 auto; padding: 25px 0 38px; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid rgba(255, 65, 89, .13); color: #985061; font: 8px/1.8 var(--mono); letter-spacing: .07em; }
+    .footer-links { display: flex; gap: 18px; flex-wrap: wrap; }
+    .footer a:hover { color: #ff8a99; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    @media (max-width: 820px) {
+      .site-header { width: min(100% - 32px, 680px); flex-wrap: wrap; padding-top: 18px; }
+      .nav { order: 3; width: 100%; justify-content: center; padding-top: 12px; margin: 0; border-top: 1px solid rgba(255,65,89,.1); }
+      .hero { width: min(100% - 32px, 680px); min-height: unset; grid-template-columns: 1fr; padding: 72px 0 50px; gap: 6px; }
+      .hero-copy { max-width: 620px; }
+      .visual-wrap { min-height: 390px; }
+      .orbit-scene { width: min(390px, 86vw); }
+      .section { width: min(100% - 32px, 680px); padding: 55px 0; }
+      .section-heading { align-items: start; flex-direction: column; }
+      .market-panel { grid-template-columns: 1fr; }
+      .market-side { grid-template-columns: repeat(4, 1fr); }
+      .metric-card { padding: 16px 13px; }
+      .metric-value { font-size: 14px; }
+      .footer { width: min(100% - 32px, 680px); }
+    }
+    @media (max-width: 540px) {
+      .site-header { width: calc(100% - 28px); gap: 12px; }
+      .nav { gap: 17px; }
+      .nav a { font-size: 8px; }
+      .trade-button { min-width: 88px; padding: 10px 12px; font-size: 9px; }
+      .hero { width: calc(100% - 34px); padding-top: 58px; }
+      h1 { font-size: clamp(47px, 15vw, 74px); }
+      .hero-description { font-size: 12px; }
+      .visual-wrap { min-height: 320px; }
+      .orbit-scene { width: min(320px, 85vw); }
+      .reactor-button { width: 70px; height: 82px; right: -2%; }
+      .reactor-button svg { width: 63px; height: 72px; }
+      .reactor-caption { width: 91px; font-size: 7px; }
+      .signal-card { top: 5%; right: 0; }
+      .orbit-label { left: 0; bottom: 7%; }
+      .section { width: calc(100% - 34px); padding: 48px 0; }
+      .market-main { padding: 20px 18px; }
+      .market-side { grid-template-columns: 1fr 1fr; }
+      .market-top { align-items: flex-start; flex-direction: column; gap: 9px; }
+      .price-line { flex-wrap: wrap; }
+      .info-grid { grid-template-columns: 1fr; }
+      .info-card { min-height: auto; padding: 21px; }
+      .footer { width: calc(100% - 34px); flex-direction: column; }
+      .currency-symbol { width: 36px; height: 36px; font-size: 14px; }
+      .currency-symbol:nth-child(5), .currency-symbol:nth-child(7) { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="space-glow" aria-hidden="true"></div>
+  <div class="nebula" aria-hidden="true"></div>
+  <canvas id="fx-layer" aria-hidden="true"></canvas>
+  <div class="currency-field" aria-label="Interactive floating currency symbols">
+    <span class="currency-symbol" title="Hover for a particle burst">$</span>
+    <span class="currency-symbol" title="Hover for a particle burst">€</span>
+    <span class="currency-symbol" title="Hover for a particle burst">¥</span>
+    <span class="currency-symbol" title="Hover for a particle burst">£</span>
+    <span class="currency-symbol" title="Hover for a particle burst">₿</span>
+    <span class="currency-symbol" title="Hover for a particle burst">₹</span>
+    <span class="currency-symbol" title="Hover for a particle burst">₩</span>
+    <span class="currency-symbol" title="Hover for a particle burst">₣</span>
+  </div>
+
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="SHX TOKEN home">
+      <img src="/assets/shx-mark.png" alt="">
+      <span><span class="brand-name">SHX TOKEN</span><span class="brand-sub">STELLAR ASSET / 01</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#market">MARKET</a>
+      <a href="#network">STELLAR</a>
+      <a href="#assets">ASSET LIST</a>
+    </nav>
+    <a class="trade-button" href="https://stellarterm.com/exchange/SHX-GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX/XLM-native" target="_blank" rel="noopener noreferrer">
+      Trade <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M5 3h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow">A new signal in the Stellar cosmos</div>
+        <h1 id="hero-title">Beyond<br><span>the ordinary.</span></h1>
+        <p class="hero-description">Enter the orbit of <strong>SHX TOKEN</strong> — a digital asset identified on the Stellar network by its own issuer address. Explore the market directly on-chain, follow the signals, and discover what the next chapter could bring.</p>
+        <div class="hero-actions">
+          <a class="trade-button" href="https://stellarterm.com/exchange/SHX-GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX/XLM-native" target="_blank" rel="noopener noreferrer">Trade SHX <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 13 13 3M5 3h8v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+          <a class="text-link" href="#market">Explore live market <span aria-hidden="true">↘</span></a>
+        </div>
+        <div class="network-pill"><i></i> STELLAR MAINNET <span>•</span> ISSUER-SPECIFIC ASSET PROFILE</div>
+      </div>
+
+      <div class="visual-wrap" aria-label="Animated SHX token illustration">
+        <div class="orbit-scene">
+          <div class="orbit-ring one"></div><div class="orbit-ring two"></div><div class="orbit-ring three"></div>
+          <div class="orbit-core"><img src="/assets/shx-mark.png" alt="SHX TOKEN coin"></div>
+          <div class="orbit-label">STELLAR / DIGITAL ASSET<strong>SHX — 7 DECIMALS</strong></div>
+          <div class="signal-card">SIGNAL STATUS<b>ON THE LEDGER</b></div>
+          <button class="reactor-button" id="reactor" type="button" aria-label="Trigger a cosmic particle burst">
+            <svg viewBox="0 0 100 110" fill="none" aria-hidden="true">
+              <path d="M50 6 95 94H5L50 6Z" fill="rgba(255,50,82,.08)" stroke="#ff526b" stroke-width="1.5"/>
+              <path d="M50 22 79 80H21L50 22Z" stroke="rgba(255,150,165,.65)" stroke-width="1" stroke-dasharray="3 5"/>
+              <circle cx="50" cy="62" r="8" fill="#ff526b" fill-opacity=".8"/>
+              <circle cx="50" cy="62" r="17" stroke="rgba(255,82,107,.65)" stroke-width="1"/>
+            </svg>
+            <span class="reactor-caption">HOVER TO<br>IGNITE THE COSMOS</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="market" aria-labelledby="market-title">
+      <div class="section-heading">
+        <div><div class="section-kicker">01 / Market pulse</div><h2 id="market-title">The live signal.</h2></div>
+        <p class="section-intro">A live quote is requested from Stellar’s public order book for this exact SHX issuer and the XLM market. No unrelated token price is substituted.</p>
+      </div>
+      <div class="market-panel">
+        <div class="market-main">
+          <div class="market-top"><span class="market-label">SHX / XLM · INDICATIVE MARKET PRICE</span><span class="status"><i class="live-dot" id="market-dot"></i><span id="market-status">CONNECTING TO STELLAR</span></span></div>
+          <div class="price-line"><strong class="price-value" id="price-value">—</strong><span class="price-unit">XLM / SHX</span></div>
+          <div class="price-foot"><span id="updated-at">Waiting for first quote…</span><span id="market-method">STELLAR HORIZON · SDEX</span></div>
+          <button class="refresh-button" id="refresh-market" type="button">↻ &nbsp; Refresh quote</button>
+        </div>
+        <div class="market-side">
+          <div class="metric-card"><div class="metric-label">Best bid</div><div class="metric-value" id="bid-value">—</div></div>
+          <div class="metric-card"><div class="metric-label">Best ask</div><div class="metric-value" id="ask-value">—</div></div>
+          <div class="metric-card"><div class="metric-label">Spread</div><div class="metric-value" id="spread-value">—</div></div>
+          <div class="metric-card"><div class="metric-label">Quote pair</div><div class="metric-value">XLM</div></div>
+        </div>
+      </div>
+      <p class="market-note" id="market-note">The indicative price is the midpoint of the best visible bid and ask. It is not a guaranteed execution price. Market data refreshes automatically every 30 seconds.</p>
+    </section>
+
+    <section class="section" id="network" aria-labelledby="network-title">
+      <div class="section-heading">
+        <div><div class="section-kicker">02 / The network beneath</div><h2 id="network-title">Built on Stellar.</h2></div>
+        <p class="section-intro">A global settlement layer designed to move value with speed, efficiency and open access.</p>
+      </div>
+      <div class="info-grid">
+        <article class="info-card">
+          <h3>A network made for movement.</h3>
+          <p>Stellar is an open-source, public blockchain built for payments and digital assets. It lets people and businesses issue, hold and exchange tokenized value, with a built-in decentralized exchange and low-cost transactions. Its Stellar Consensus Protocol helps the network reach agreement without energy-intensive mining.</p>
+          <span class="micro">PUBLIC LEDGER · NATIVE ASSETS · STELLAR CONSENSUS PROTOCOL</span>
+        </article>
+        <article class="info-card">
+          <h3>Potential is written through adoption.</h3>
+          <p>SHX TOKEN’s future market story would depend on real utility, sustained liquidity, transparent issuer practices and wider ecosystem participation. If those foundations strengthen, attention and demand could grow. That is a possibility to evaluate — never a promise of performance or future returns.</p>
+          <span class="micro">NO PRICE TARGETS · NO GUARANTEED RETURNS · DO YOUR OWN RESEARCH</span>
+        </article>
+      </div>
+      <div class="issuer-box"><strong>ASSET ID</strong><br>SHX : GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX<br><br><strong>IDENTITY NOTE</strong><br>Asset codes are not unique on Stellar; the issuer address defines the asset. This page tracks only the issuer shown above. It is not affiliated with Stronghold’s separately issued SHx asset, whose published Stellar issuer begins GDSTRSHX.</div>
+    </section>
+
+    <section class="section" id="assets" aria-labelledby="assets-title">
+      <div class="section-heading">
+        <div><div class="section-kicker">03 / Stellar ecosystem</div><h2 id="assets-title">Other assets in orbit.</h2></div>
+        <p class="section-intro">A quick look at selected asset names within the wider Stellar landscape.</p>
+      </div>
+      <div class="token-grid" aria-label="Selected token logos">
+        <a class="ecosystem-token" href="https://aqua.network/" target="_blank" rel="noopener noreferrer" aria-label="AQUA — Aquarius official website">
+          <span class="token-logo"><img src="/assets/tokens/aqua.svg" alt="AQUA stylized token logo"></span><span class="token-meta"><span class="token-code">AQUA</span><span class="token-desc">AQUARIUS · STELLAR ECOSYSTEM</span></span><span class="token-open">VIEW ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://www.circle.com/eurc" target="_blank" rel="noopener noreferrer" aria-label="EURC — Circle official website">
+          <span class="token-logo"><img src="/assets/tokens/eurc.svg" alt="EURC stylized token logo"></span><span class="token-meta"><span class="token-code">EURC</span><span class="token-desc">EURO-DENOMINATED STABLECOIN</span></span><span class="token-open">VIEW ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://support.stablecoin.z.com/hc/en-us/articles/62115331118745-Mandatory-Redemption-What-Happens-to-GYEN-and-ZUSD-Not-Redeemed-by-November-11-2026" target="_blank" rel="noopener noreferrer" aria-label="GYEN — official wind-down notice">
+          <span class="token-logo"><img src="/assets/tokens/gyen.svg" alt="GYEN stylized token logo"></span><span class="token-meta"><span class="token-code">GYEN</span><span class="token-desc">JAPANESE-YEN STABLECOIN</span><span class="token-status alert">ISSUER WIND-DOWN · CHECK NOTICE</span></span><span class="token-open">NOTICE ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://app.realio.fund/" target="_blank" rel="noopener noreferrer" aria-label="RIO — Realio official platform notice">
+          <span class="token-logo"><img src="/assets/tokens/rio.svg" alt="RIO stylized token logo"></span><span class="token-meta"><span class="token-code">RIO</span><span class="token-desc">REALIO NETWORK TOKEN</span><span class="token-status alert">STELLAR ASSET DEPRECATED</span></span><span class="token-open">NOTICE ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://scop.scopuly.com/" target="_blank" rel="noopener noreferrer" aria-label="SCOP — Scopuly official token website">
+          <span class="token-logo"><img src="/assets/tokens/scop.svg" alt="SCOP stylized token logo"></span><span class="token-meta"><span class="token-code">SCOP</span><span class="token-desc">SCOPULY ECOSYSTEM TOKEN</span></span><span class="token-open">VIEW ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://www.circle.com/usdc" target="_blank" rel="noopener noreferrer" aria-label="USDC — Circle official website">
+          <span class="token-logo"><img src="/assets/tokens/usdc.svg" alt="USDC stylized token logo"></span><span class="token-meta"><span class="token-code">USDC</span><span class="token-desc">US DOLLAR STABLECOIN</span></span><span class="token-open">VIEW ↗</span>
+        </a>
+        <a class="ecosystem-token" href="https://www.velo.org/token" target="_blank" rel="noopener noreferrer" aria-label="VELO — Velo official token website">
+          <span class="token-logo"><img src="/assets/tokens/velo.svg" alt="VELO stylized token logo"></span><span class="token-meta"><span class="token-code">VELO</span><span class="token-desc">VELO NETWORK UTILITY TOKEN</span></span><span class="token-open">VIEW ↗</span>
+        </a>
+      </div>
+      <p class="token-disclaimer">The marks above are original, site-created visual identifiers, not official issuer artwork or evidence of partnership. Symbols can be reused by unrelated assets, so verify each network and issuer. GYEN’s published redemption deadline was November 11, 2026; Realio states that its RIO asset on Stellar is deprecated. Review the linked official notices before interacting.</p>
+      <p class="risk-note">Digital assets are volatile and can lose some or all of their value. An asset name or ticker does not establish issuer identity, legitimacy, liquidity, reserves or future performance. Always verify the issuer and market before trading.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>© <span id="year"></span> SHX TOKEN · STELLAR ASSET PROFILE</span>
+    <div class="footer-links"><a href="https://stellar.org/" target="_blank" rel="noopener noreferrer">STELLAR</a><a href="https://stellar.expert/explorer/public/account/GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX" target="_blank" rel="noopener noreferrer">ISSUER EXPLORER</a><a href="/.well-known/stellar.toml">STELLAR.TOML</a></div>
+  </footer>
+
+  <script>
+    (() => {
+      "use strict";
+      const ISSUER = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX";
+      const ASSET_CODE = "SHX";
+      const HORIZON = "https://horizon.stellar.org";
+      const priceEl = document.getElementById("price-value");
+      const bidEl = document.getElementById("bid-value");
+      const askEl = document.getElementById("ask-value");
+      const spreadEl = document.getElementById("spread-value");
+      const statusEl = document.getElementById("market-status");
+      const updatedEl = document.getElementById("updated-at");
+      const noteEl = document.getElementById("market-note");
+      const dotEl = document.getElementById("market-dot");
+      const refreshBtn = document.getElementById("refresh-market");
+      const fmt = value => Number.isFinite(value) ? value.toLocaleString("en-US", { maximumFractionDigits: 7, minimumFractionDigits: 0 }) : "—";
+      const bookUrl = new URL(HORIZON + "/order_book");
+      bookUrl.search = new URLSearchParams({
+        selling_asset_type: "credit_alphanum4",
+        selling_asset_code: ASSET_CODE,
+        selling_asset_issuer: ISSUER,
+        buying_asset_type: "native",
+        limit: "20"
+      }).toString();
+
+      async function refreshMarket() {
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = "↻  Checking Stellar…";
+        statusEl.textContent = "CHECKING LIVE BOOK";
+        dotEl.style.opacity = ".55";
+        try {
+          const response = await fetch(bookUrl.toString(), { cache: "no-store", headers: { "Accept": "application/json" } });
+          if (!response.ok) throw new Error("Horizon returned " + response.status);
+          const book = await response.json();
+          const bids = Array.isArray(book.bids) ? book.bids : [];
+          const asks = Array.isArray(book.asks) ? book.asks : [];
+          const bid = bids.length ? Number(bids[0].price) : NaN;
+          const ask = asks.length ? Number(asks[0].price) : NaN;
+          bidEl.textContent = fmt(bid);
+          askEl.textContent = fmt(ask);
+          if (Number.isFinite(bid) && Number.isFinite(ask) && bid > 0 && ask > 0) {
+            const mid = (bid + ask) / 2;
+            priceEl.textContent = fmt(mid);
+            spreadEl.textContent = (((ask - bid) / mid) * 100).toFixed(2) + "%";
+            statusEl.textContent = "LIVE ORDER BOOK";
+            noteEl.textContent = "Indicative price = midpoint of the best visible SHX/XLM bid and ask for this exact issuer. Quotes can change quickly and are not guaranteed execution prices.";
+          } else if ((Number.isFinite(bid) && bid > 0) || (Number.isFinite(ask) && ask > 0)) {
+            const oneSide = Number.isFinite(bid) && bid > 0 ? bid : ask;
+            priceEl.textContent = fmt(oneSide);
+            spreadEl.textContent = "ONE-SIDED";
+            statusEl.textContent = "THIN ORDER BOOK";
+            noteEl.textContent = "Only one side of the SHX/XLM order book is currently visible. The displayed figure is the available top-of-book quote, not a midpoint or guaranteed execution price.";
+          } else {
+            priceEl.textContent = "NO LIVE QUOTE";
+            spreadEl.textContent = "—";
+            statusEl.textContent = "NO ACTIVE XLM BOOK";
+            noteEl.textContent = "Stellar Horizon responded, but there are currently no visible SHX/XLM bids or asks for the exact issuer address on this page. No other SHX issuer's price is substituted.";
+          }
+          updatedEl.textContent = "UPDATED " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+          dotEl.style.opacity = "1";
+        } catch (error) {
+          priceEl.textContent = "UNAVAILABLE";
+          bidEl.textContent = "—";
+          askEl.textContent = "—";
+          spreadEl.textContent = "—";
+          statusEl.textContent = "DATA CONNECTION ISSUE";
+          updatedEl.textContent = "LAST CHECK " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+          noteEl.textContent = "Live Stellar market data could not be reached from this browser. Check your connection and refresh. No cached or unrelated market price is displayed.";
+          dotEl.style.opacity = ".4";
+        } finally {
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = "↻  Refresh quote";
+        }
+      }
+      refreshBtn.addEventListener("click", refreshMarket);
+      refreshMarket();
+      window.setInterval(refreshMarket, 30000);
+      document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Interactive starfield and colorful coin-like particle bursts.
+      const canvas = document.getElementById("fx-layer");
+      const ctx = canvas.getContext("2d", { alpha: true });
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let width = 0, height = 0, dpr = 1;
+      const pointer = { x: -1000, y: -1000 };
+      let stars = [];
+      let particles = [];
+      const rand = (min, max) => min + Math.random() * (max - min);
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth; height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr); canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + "px"; canvas.style.height = height + "px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.min(240, Math.max(90, Math.floor(width * height / 6200)));
+        stars = Array.from({ length: count }, () => ({ x: Math.random() * width, y: Math.random() * height, r: rand(.45, 1.55), a: rand(.22, .85), phase: rand(0, Math.PI * 2), vx: rand(-.12, .12), vy: rand(-.1, .1) }));
+      }
+      function burstAt(x, y, count = 250) {
+        const colors = ["#ff2d55", "#ffb347", "#ffe66d", "#70e1ff", "#a78bfa", "#f472b6", "#57f2b0", "#ffffff", "#ff6b35"];
+        for (let i = 0; i < count; i++) {
+          const angle = rand(-Math.PI * .98, -.04);
+          const speed = rand(1.1, 7.5);
+          particles.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life: rand(48, 105), max: 105, size: rand(1.2, 3.6), hue: colors[Math.floor(Math.random() * colors.length)], coin: Math.random() > .55, spin: rand(-.18, .18), rot: rand(0, Math.PI * 2) });
+        }
+        if (particles.length > 5200) particles.splice(0, particles.length - 5200);
+      }
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        const px = pointer.x, py = pointer.y;
+        for (const s of stars) {
+          const dx = s.x - px, dy = s.y - py;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          let rx = 0, ry = 0;
+          if (dist < 115 && dist > 0) { const force = (115 - dist) / 115; rx = (dx / dist) * force * 13; ry = (dy / dist) * force * 13; }
+          if (!reduceMotion) { s.x += s.vx; s.y += s.vy; if (s.x < 0) s.x = width; if (s.x > width) s.x = 0; if (s.y < 0) s.y = height; if (s.y > height) s.y = 0; }
+          const alpha = s.a * (.7 + Math.sin(Date.now() * .001 + s.phase) * .3);
+          ctx.beginPath(); ctx.arc(s.x + rx, s.y + ry, s.r, 0, Math.PI * 2); ctx.fillStyle = `rgba(186, 211, 255, ${alpha})`; ctx.fill();
+          if (s.r > 1.2) { ctx.beginPath(); ctx.arc(s.x + rx, s.y + ry, s.r * 3.2, 0, Math.PI * 2); ctx.fillStyle = `rgba(80, 142, 255, ${alpha * .07})`; ctx.fill(); }
+        }
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx; p.y += p.vy; p.vy += .035; p.vx *= .992; p.life -= 1; p.rot += p.spin;
+          const alpha = Math.max(0, p.life / p.max);
+          ctx.save(); ctx.globalAlpha = alpha; ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+          if (p.coin) {
+            ctx.beginPath(); ctx.ellipse(0, 0, p.size * 1.45, p.size, 0, 0, Math.PI * 2); ctx.fillStyle = p.hue; ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = .55; ctx.stroke();
+          } else {
+            ctx.beginPath(); ctx.arc(0, 0, p.size, 0, Math.PI * 2); ctx.fillStyle = p.hue; ctx.shadowBlur = 9; ctx.shadowColor = p.hue; ctx.fill();
+          }
+          ctx.restore();
+          if (p.life <= 0) particles.splice(i, 1);
+        }
+        requestAnimationFrame(draw);
+      }
+      resize(); window.addEventListener("resize", resize, { passive: true });
+      window.addEventListener("pointermove", event => {
+        pointer.x = event.clientX; pointer.y = event.clientY;
+        document.documentElement.style.setProperty("--move-x", (event.clientX - width / 2) + "px");
+        document.documentElement.style.setProperty("--move-y", (event.clientY - height / 2) + "px");
+      }, { passive: true });
+      document.querySelectorAll(".currency-symbol").forEach(symbol => {
+        let last = 0;
+        const pop = event => {
+          const now = Date.now(); if (now - last < 600) return; last = now;
+          const rect = symbol.getBoundingClientRect();
+          burstAt(event && Number.isFinite(event.clientX) ? event.clientX : rect.left + rect.width / 2, event && Number.isFinite(event.clientY) ? event.clientY : rect.top + rect.height / 2, 520);
+        };
+        symbol.addEventListener("pointerenter", pop);
+        symbol.addEventListener("click", pop);
+      });
+      const reactor = document.getElementById("reactor");
+      let reactorLast = 0;
+      const ignite = () => {
+        const now = Date.now(); if (now - reactorLast < 750) return; reactorLast = now;
+        const rect = reactor.getBoundingClientRect();
+        burstAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1800);
+      };
+      reactor.addEventListener("pointerenter", ignite);
+      reactor.addEventListener("click", ignite);
+      reactor.addEventListener("focus", ignite);
+      if (!reduceMotion) requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>
