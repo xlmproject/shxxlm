@@ -7,7 +7,6 @@ ORG_URL = "https://shxxlm.pages.dev"
 ORG_DESCRIPTION = "SHX TOKEN is an issuer-specific digital asset profile on the public Stellar network. This site presents the asset identifier supplied by its publisher, live Stellar decentralized-exchange order-book data when available, and educational information about Stellar. Market availability, utility, adoption and future value are not guaranteed."
 ORG_LOGO = "https://SHX.pages.dev/SHX.png"
 
-
 [[CURRENCIES]]
 code = "SHX"
 issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
@@ -16,3 +15,72 @@ display_decimals = 7
 desc = "SHX TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
 conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
 image = "https://shxxlm.pages.dev/SHX.png"
+
+[[CURRENCIES]]
+code = "AQUA"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "AQUA"
+display_decimals = 7
+desc = "AQUA TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/AQUA.png"
+
+[[CURRENCIES]]
+code = "GYEN."
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "GYEN."
+display_decimals = 7
+desc = "GYEN TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/GYEN.png"
+
+[[CURRENCIES]]
+code = "RIO"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "RIO"
+display_decimals = 7
+desc = "RIO TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/RIO.png"
+
+
+[[CURRENCIES]]
+code = "VELO"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "VELO"
+display_decimals = 7
+desc = "VELO TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/VELO.png"
+
+[[CURRENCIES]]
+code = "EURC"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "EURIC"
+display_decimals = 7
+desc = "EURC TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/EURIC.png"
+
+[[CURRENCIES]]
+code = "USDC"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "USDC"
+display_decimals = 7
+desc = "USDC TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/USDC.png"
+
+[[CURRENCIES]]
+code = "SCOP"
+issuer = "GBSQFHA3PDQPKG4QKJ2GMQIZASFVLQDO3YF3K7IG2CULIHMTMKZCLSTX"
+name = "SCOP"
+display_decimals = 7
+desc = "SCOP TOKEN is a Stellar-based digital asset identified by the issuer account listed in this file. Stellar is an open, public blockchain designed for payments and tokenized asset exchange, with a built-in decentralized exchange and Stellar Consensus Protocol. The SHX ticker can be used by more than one issuer, so this entry refers only to the exact issuer address above. The website retrieves indicative SHX/XLM order-book quotes for this asset when offers are available. No price, liquidity, utility, adoption or investment return is promised."
+conditions = "Digital asset markets are volatile. Verify the issuer address before establishing a trustline or trading. A displayed order-book quote is indicative and may change or disappear; it is not a guaranteed execution price. This asset profile does not imply affiliation with Stronghold or its separately issued SHX token."
+image = "https://shxxlm.pages.dev/SCOP.png"
+
+
+
+
+
